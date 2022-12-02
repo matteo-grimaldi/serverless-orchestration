@@ -1,0 +1,147 @@
+{
+  "id": "orchestration",
+  "version": "1.0",
+  "specVersion": "0.8.0",
+  "name": "Orchestration workflow",
+  "start": "Reserve Flight",
+  "errors":[
+    {
+       "name":"Process Flight Reservation Failed",
+       "code":"org.kie.kogito.ServiceException"
+    },
+    {
+       "name":"Process Car Reservation Failed",
+       "code":"org.kie.kogito.ServiceException"
+    },
+    {
+      "name":"Process Payments Failed",
+      "code":"org.kie.kogito.ServiceException"
+   },
+    {
+       "name":"shipping failed",
+       "code":"org.kie.kogito.ServiceException"
+    },
+    {
+       "name":"Process Flight Confirm Failed",
+       "code":"org.kie.kogito.ServiceException"
+    },
+    {
+       "name":"Process Rental Confirm Failed",
+       "code":"org.kie.kogito.ServiceException"
+    }
+ ],
+  "states": [
+    {
+      "name": "Reserve Flight",
+      "type": "operation",
+      "actions": [
+        {
+          "name": "subtract",
+          "functionRef": {
+            "refName": "subtraction", 
+            "arguments": { 
+              "leftElement": ".fahrenheit",
+              "rightElement": ".subtractValue"
+            }
+          }
+        }
+      ],
+      "transition": "Reserve Car Rental",
+      "compensatedBy":"Cancel Flight Reservation",
+      "onErrors":[
+         {
+            "errorRef":"Process Flight Reservation Failed",
+            "transition":"ServiceError"
+         }
+      ]
+    },
+    {
+      "name": "Reserve Car Rental",
+      "type": "operation",
+      "actions": [],
+      "transition": "Process Payment",
+      "compensatedBy":"Cancel Car Reservation",
+      "onErrors":[
+         {
+            "errorRef":"Process Car Reservation Failed",
+            "transition":"ServiceError"
+         }
+      ]
+    },
+    {
+      "name": "Process Payment",
+      "type": "operation",
+      "actions": [],
+      "transition": "Confirm Flight",
+      "compensatedBy":"Refund Payment",
+      "onErrors":[
+         {
+            "errorRef":"Process Payments Failed",
+            "transition":"ServiceError"
+         }
+      ]
+    },
+    {
+      "name": "Confirm Flight",
+      "type": "operation",
+      "actions": [],
+      "transition": "Confirm Car Rental",
+      "compensatedBy":"Refund Payment",
+      "onErrors":[
+         {
+            "errorRef":"Process Flight Confirm Failed",
+            "transition":"ServiceError"
+         }
+      ]
+    },
+    {
+      "name": "Confirm Car Rental",
+      "type": "operation",
+      "actions": [],
+      "transition": "Notifying success",
+      "compensatedBy":"Refund Payment",
+      "onErrors":[
+         {
+            "errorRef":"Process Rental Confirm Failed",
+            "transition":"ServiceError"
+         }
+      ]
+    },
+    {
+      "name": "Notifying success",
+      "type": "operation",
+      "actions": [],
+      "end": true
+    },
+    {
+      "name": "Refund Payment",
+      "type": "operation",
+      "actions": [],
+      "transition": "Cancel Car Reservation"
+    },
+    {
+      "name": "Cancel Car Reservation",
+      "type": "operation",
+      "actions": [],
+      "transition": "Cancel Flight Reservation"
+    },
+    {
+      "name": "Cancel Flight Reservation",
+      "type": "operation",
+      "actions": [],
+      "transition": "Notifying Failure"
+    },
+    {
+      "name": "ServiceError",
+      "type": "operation",
+      "actions": [],
+      "end": true
+    },
+    {
+      "name": "Notifying Failure",
+      "type": "operation",
+      "actions": [],
+      "end": true
+    }
+  ]
+}
