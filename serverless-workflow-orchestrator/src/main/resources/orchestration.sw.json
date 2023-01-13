@@ -36,13 +36,10 @@
       "type": "operation",
       "actions": [
         {
-          "name": "subtract",
+          "name": "reserve",
           "functionRef": {
-            "refName": "subtraction", 
-            "arguments": { 
-              "leftElement": ".fahrenheit",
-              "rightElement": ".subtractValue"
-            }
+            "refName": "reserveFlight", 
+            "invoke": "sync"
           }
         }
       ],
@@ -58,7 +55,14 @@
     {
       "name": "Reserve Car Rental",
       "type": "operation",
-      "actions": [],
+      "actions": [ {
+        "name": "reserve",
+        "functionRef": {
+          "refName": "reserveCar", 
+          "invoke": "sync"
+        }
+      }
+    ],
       "transition": "Process Payment",
       "compensatedBy":"Cancel Car Reservation",
       "onErrors":[
@@ -71,7 +75,14 @@
     {
       "name": "Process Payment",
       "type": "operation",
-      "actions": [],
+      "actions": [{
+        "name": "pay",
+        "functionRef": {
+          "refName": "pay", 
+          "invoke": "sync"
+        }
+      }
+    ],
       "transition": "Confirm Flight",
       "compensatedBy":"Refund Payment",
       "onErrors":[
@@ -84,7 +95,14 @@
     {
       "name": "Confirm Flight",
       "type": "operation",
-      "actions": [],
+      "actions": [{
+        "name": "confirm",
+        "functionRef": {
+          "refName": "confirmFlight", 
+          "invoke": "sync"
+        }
+      }
+    ],
       "transition": "Confirm Car Rental",
       "compensatedBy":"Refund Payment",
       "onErrors":[
@@ -97,7 +115,14 @@
     {
       "name": "Confirm Car Rental",
       "type": "operation",
-      "actions": [],
+      "actions": [{
+        "name": "confirm",
+        "functionRef": {
+          "refName": "confirmCar", 
+          "invoke": "sync"
+        }
+      }
+    ],
       "transition": "Notifying success",
       "compensatedBy":"Refund Payment",
       "onErrors":[
@@ -109,6 +134,12 @@
     },
     {
       "name": "Notifying success",
+      "type": "operation",
+      "actions": [],
+      "end": true
+    },
+    {
+      "name": "ServiceError",
       "type": "operation",
       "actions": [],
       "end": true
@@ -132,16 +163,36 @@
       "transition": "Notifying Failure"
     },
     {
-      "name": "ServiceError",
-      "type": "operation",
-      "actions": [],
-      "end": true
-    },
-    {
       "name": "Notifying Failure",
       "type": "operation",
       "actions": [],
       "end": true
     }
+  ],
+  "functions": [{
+    "name": "reserveFlight",
+    "operation": "localhost#operation",
+    "type": "rest"
+  },
+  {
+    "name": "reserveCar",
+    "operation": "localhost#operation",
+    "type": "rest"
+  },
+  {
+    "name": "pay",
+    "operation": "localhost#operation",
+    "type": "rest"
+  },
+  {
+    "name": "confirmFlight",
+    "operation": "localhost#operation",
+    "type": "rest"
+  },
+  {
+    "name": "confirmCar",
+    "operation": "localhost#operation",
+    "type": "rest"
+  }
   ]
 }
